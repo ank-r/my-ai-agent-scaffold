@@ -3,3 +3,11 @@ spring:
     name: my-ai-agent-scaffold-app
   profiles:
     active: dev
+  autoconfigure:
+    exclude:
+      - com.google.adk.models.springai.autoconfigure.SpringAIAutoConfiguration
+temp:
+  deepseek:
+    key: ${DeepseekKey}
+  PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY}
+
