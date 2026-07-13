@@ -3,12 +3,14 @@ package org.ryc.ai.config;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.ryc.ai.domain.agent.model.valobj.properties.AiAgentAutoConfigProperties;
+import org.ryc.ai.domain.agent.service.armory.ArmoryAgentService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 
 @Slf4j
 @Configuration
@@ -18,10 +20,15 @@ public class AiAgentAutoConfig implements ApplicationListener<ApplicationReadyEv
     @Resource
     private AiAgentAutoConfigProperties aiAgentAutoConfigProperties;
 
+    @Resource
+    private ArmoryAgentService armoryAgentService;
+
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         try {
             log.info("Ai Agent 智能体装配 {}", JSON.toJSONString(aiAgentAutoConfigProperties.getTables().values()));
+            armoryAgentService.acceptArmoryAgents((new ArrayList<>(aiAgentAutoConfigProperties.getTables().values())));
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

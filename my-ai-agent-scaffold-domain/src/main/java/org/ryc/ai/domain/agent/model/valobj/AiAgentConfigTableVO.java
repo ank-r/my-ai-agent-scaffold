@@ -58,6 +58,8 @@ public class AiAgentConfigTableVO {
 
         private List<AgentWorkflow> agentWorkflows;
 
+        private Runner runner;
+
         @Data
         public static class AiApi {
             private String baseUrl;
@@ -126,6 +128,16 @@ public class AiAgentConfigTableVO {
             private List<String> subAgents;
             private String description;
             private Integer maxIterations = 3;
+
+        }
+
+
+        @Data
+        public static class Runner {
+            /**
+             * 类型；直接构建运行runner的agent
+             */
+             private String agentName;;
 
         }
     }

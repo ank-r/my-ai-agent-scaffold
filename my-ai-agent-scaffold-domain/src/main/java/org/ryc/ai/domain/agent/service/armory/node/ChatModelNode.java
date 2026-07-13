@@ -22,6 +22,7 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +38,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class ChatModelNode extends  AbstractArmorySupport{
+
+    @Resource
+    private AgentNode agentNode;
 
     @Override
     protected AiAgentRegisterVO doApply(ArmoryCommandEntity armoryCommandEntity, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
@@ -62,14 +66,14 @@ public class ChatModelNode extends  AbstractArmorySupport{
         AiAgentRegisterVO aiAgentRegisterVO = new AiAgentRegisterVO();
         aiAgentRegisterVO.setDynamicContext(dynamicContext);
 
-        return aiAgentRegisterVO;
+        return router(armoryCommandEntity, dynamicContext);
     }
 
 
 
     @Override
     public StrategyHandler<ArmoryCommandEntity, DefaultArmoryFactory.DynamicContext, AiAgentRegisterVO> get(ArmoryCommandEntity armoryCommandEntity, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
-        return null;
+        return agentNode;
     }
 
 
