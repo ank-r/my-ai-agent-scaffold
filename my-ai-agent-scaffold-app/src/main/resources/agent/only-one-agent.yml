@@ -7,7 +7,7 @@ ai:
           agent:
             agent-id: 100002
             agent-name: onlyAgent
-            agent-desc: onlyAgent测试
+            agent-desc: onlyAgent
           module:
             ai-api:
               base-url: https://api.deepseek.com
@@ -34,6 +34,9 @@ ai:
                         - "E:\\Study\\xaiofuge\\my-ai-agent-scaffold\\my-ai-agent-scaffold-app\\data"
                 - localMcp:
                     name: weatherServiceMcp
+              skill-list:
+                - type: resource
+                  path: agent/skills
 
 
             agents:

@@ -75,6 +75,8 @@ public class AiAgentConfigTableVO {
             private String model;
             private List<ToolMcp> toolMcpList;
 
+            private List<Skill> skillList;
+
             @Data
             public static class ToolMcp {
 
@@ -113,6 +115,15 @@ public class AiAgentConfigTableVO {
                     private String name;
 
                 }
+
+            }
+
+            @Data
+            public static class Skill{
+
+                private String type;
+
+                private String path;
 
             }
         }
