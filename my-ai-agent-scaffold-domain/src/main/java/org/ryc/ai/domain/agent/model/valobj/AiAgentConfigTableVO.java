@@ -82,6 +82,8 @@ public class AiAgentConfigTableVO {
 
                 private StdioServerParameters stdio;
 
+                private LocalMcp localMcp;
+
                 @Data
                 public static class SSEServerParameters {
                     private String name;
@@ -104,6 +106,12 @@ public class AiAgentConfigTableVO {
                         private Map<String, String> env;
 
                     }
+                }
+
+                @Data
+                public static class LocalMcp {
+                    private String name;
+
                 }
 
             }
@@ -137,7 +145,9 @@ public class AiAgentConfigTableVO {
             /**
              * 类型；直接构建运行runner的agent
              */
-             private String agentName;;
+             private String agentName;
+
+            private List<String>  plugins;
 
         }
     }

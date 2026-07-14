@@ -12,6 +12,8 @@ public enum ResponseCode {
     SUCCESS("0000", "成功"),
     UN_ERROR("0001", "未知失败"),
     ILLEGAL_PARAMETER("0002", "非法参数"),
+
+    ILLEGAL_AGENT_ID("0003", "当前agent不存在"),
     ;
 
     private String code;

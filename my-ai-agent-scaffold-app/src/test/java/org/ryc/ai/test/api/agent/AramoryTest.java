@@ -100,7 +100,31 @@ public class AramoryTest {
 
         Session session = runner.sessionService().createSession(aiAgentRegisterVO.getAgentId(), "user-1234").blockingGet();
 
-        String message = "写一个关于如何Google ADK使用介绍的ppt 文件最终文件放在 path E:\\Study\\xaiofuge\\my-ai-agent-scaffold\\my-ai-agent-scaffold-app\\data";
+        // String message = "写一个关于如何Google ADK使用介绍的ppt 文件最终文件放在 path E:\\Study\\xaiofuge\\my-ai-agent-scaffold\\my-ai-agent-scaffold-app\\data";
+        String message = "根据我当前的地方杭州西湖区的天气写一个适合外出的活动的ppt， 文件最终文件放在 path E:\\Study\\xaiofuge\\my-ai-agent-scaffold\\my-ai-agent-scaffold-app\\data";
+
+        Flowable<Event> eventFlowable = runner.runAsync("user-1234", session.id(), Content.fromParts(Part.fromText(message)));
+
+
+        eventFlowable.blockingForEach(
+                event -> {
+                    if (event.finalResponse()) {
+                        System.out.println(event.stringifyContent());
+                    }
+                });
+
+    }
+
+
+    @Test
+    public void testParallelAgent(){
+
+        AiAgentRegisterVO aiAgentRegisterVO = applicationContext.getBean("100003", AiAgentRegisterVO.class);
+        InMemoryRunner runner = aiAgentRegisterVO.getRunner();
+
+        Session session = runner.sessionService().createSession(aiAgentRegisterVO.getAgentId(), "user-1234").blockingGet();
+
+        String message = "介绍一下你能干什么，你是一个什么样的agent";
         Flowable<Event> eventFlowable = runner.runAsync("user-1234", session.id(), Content.fromParts(Part.fromText(message)));
 
 

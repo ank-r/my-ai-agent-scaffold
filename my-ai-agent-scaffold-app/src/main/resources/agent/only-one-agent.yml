@@ -2,7 +2,7 @@ ai:
   agent:
     config:
       tables:
-        testAgent:
+        onlyAgent:
           app-name: onlyAgent
           agent:
             agent-id: 100002
@@ -32,6 +32,9 @@ ai:
                         - "npx"
                         - "@modelcontextprotocol/server-filesystem"
                         - "E:\\Study\\xaiofuge\\my-ai-agent-scaffold\\my-ai-agent-scaffold-app\\data"
+                - localMcp:
+                    name: weatherServiceMcp
+
 
             agents:
               - name: onlyAgent
@@ -39,6 +42,7 @@ ai:
                 instruction: |
                   根据用户输入生成合适的ppt
                 output-key: generated_code
-
             runner:
               agent-name: onlyAgent
+              plugins:
+                - mytestPlugin

@@ -11,19 +11,23 @@ import io.modelcontextprotocol.client.transport.StdioClientTransport;
 import io.modelcontextprotocol.json.jackson.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.ryc.ai.domain.agent.model.entity.ArmoryCommandEntity;
 import org.ryc.ai.domain.agent.model.valobj.AiAgentConfigTableVO;
 import org.ryc.ai.domain.agent.model.valobj.AiAgentRegisterVO;
 import org.ryc.ai.domain.agent.service.armory.factory.DefaultArmoryFactory;
+import org.ryc.ai.domain.agent.service.armory.matter.mcp.McpClientLoad;
+import org.ryc.ai.domain.agent.service.armory.matter.mcp.client.factory.McpLoadFactory;
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,6 +46,9 @@ public class ChatModelNode extends  AbstractArmorySupport{
     @Resource
     private AgentNode agentNode;
 
+    @Resource
+    private McpLoadFactory mcpLoadFactory;
+
     @Override
     protected AiAgentRegisterVO doApply(ArmoryCommandEntity armoryCommandEntity, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
         log.info("开始加载聊天模型- chatModel");
@@ -50,14 +57,21 @@ public class ChatModelNode extends  AbstractArmorySupport{
         AiAgentConfigTableVO.Module.ChatModel chatModelParam = armoryCommandEntity.getAiAgentConfigTableVO().getModule().getChatModel();
         OpenAiApi openAiApi = dynamicContext.getOpenAiApi();
 
+        List<ToolCallback> toolCallbacks = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(chatModelParam.getToolMcpList())){
+            for (AiAgentConfigTableVO.Module.ChatModel.ToolMcp toolMcp : chatModelParam.getToolMcpList()){
+                McpClientLoad mcpClientLoad = mcpLoadFactory.getMcpClientLoad(toolMcp);
+                toolCallbacks.addAll(List.of(mcpClientLoad.getToolCallbacks(toolMcp)));
+            }
+
+        }
+
 
         ChatModel chatModel = OpenAiChatModel.builder()
                 .openAiApi(openAiApi)
                 .defaultOptions(OpenAiChatOptions.builder()
                         .model(chatModelParam.getModel())
-                        .toolCallbacks(SyncMcpToolCallbackProvider.builder()
-                                .mcpClients(getAllMcpCliAllent(chatModelParam.getToolMcpList()))
-                                .build().getToolCallbacks())
+                        .toolCallbacks(toolCallbacks)
                         .build())
                 .build();
 

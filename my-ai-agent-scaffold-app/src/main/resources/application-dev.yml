@@ -18,6 +18,11 @@ spring:
     import:
       - classpath:agent/test-agent.yml
       - classpath:agent/only-one-agent.yml
+      - classpath:agent/parallel_research_app.yml
+  ai:
+    mcp:
+      server:
+        protocol: stateless
 
 
 # MyBatis 配置【如需使用记得打开】

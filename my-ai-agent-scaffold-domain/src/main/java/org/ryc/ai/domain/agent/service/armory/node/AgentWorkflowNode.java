@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @ClassName AgentWorkflowNode
@@ -47,26 +48,27 @@ public class AgentWorkflowNode extends AbstractArmorySupport {
 
         List<AiAgentConfigTableVO.Module.AgentWorkflow> agentWorkflows = armoryCommandEntity.getAiAgentConfigTableVO().getModule().getAgentWorkflows();
 
-        if(CollectionUtils.isEmpty(agentWorkflows)){
+        if(CollectionUtils.isEmpty(agentWorkflows) || dynamicContext.getCurrentAgentWorkflowIndex() >= agentWorkflows.size() ){
+            log.info("Ai Agent 装配操作 - AgentWorkflowNode - agentWorkflows is empty");
+            dynamicContext.setCurrentAgentWorkflow(null);
             return router(armoryCommandEntity, dynamicContext);
         }
-        dynamicContext.setAgentWorkflows(agentWorkflows);
 
-
-
+        dynamicContext.setCurrentAgentWorkflow(agentWorkflows.get(dynamicContext.getCurrentAgentWorkflowIndex()));
+        dynamicContext.addAgentWorkflowIndex();
 
         return router(armoryCommandEntity, dynamicContext);
     }
 
     @Override
     public StrategyHandler<ArmoryCommandEntity, DefaultArmoryFactory.DynamicContext, AiAgentRegisterVO> get(ArmoryCommandEntity armoryCommandEntity, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
-        List<AiAgentConfigTableVO.Module.AgentWorkflow> agentWorkflows = dynamicContext.getAgentWorkflows();
 
-        if(CollectionUtils.isEmpty(agentWorkflows)){
+
+        if(Objects.isNull(dynamicContext.getCurrentAgentWorkflow())){
             return runnerNode ;
         }
 
-        AiAgentConfigTableVO.Module.AgentWorkflow agentWorkflow = agentWorkflows.get(0);
+        AiAgentConfigTableVO.Module.AgentWorkflow agentWorkflow = dynamicContext.getCurrentAgentWorkflow();
 
         String type = agentWorkflow.getType();
         AgentTypeEnum agentTypeEnum = AgentTypeEnum.formType(type);
@@ -81,7 +83,7 @@ public class AgentWorkflowNode extends AbstractArmorySupport {
             case "loopAgentNode" -> loopAgentNode;
             case "parallelAgentNode" -> parallelAgentNode;
             case "sequentialAgentNode" -> sequentialAgentNode;
-            default -> defaultStrategyHandler;
+            default -> runnerNode;
         };
     }
 
